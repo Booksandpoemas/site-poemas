@@ -1,0 +1,690 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Entre Nos</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f8f6f1;
+      --surface: #fffdf8;
+      --surface-soft: #f2eee6;
+      --text: #26231f;
+      --muted: #746f66;
+      --line: #e4ddd2;
+      --accent: #2f6f63;
+      --accent-strong: #24564e;
+      --accent-soft: #dcebe6;
+      --ink-soft: #3e3a35;
+      --rose: #b45f5f;
+      --shadow: 0 18px 55px rgba(43, 36, 28, 0.12);
+      --radius: 8px;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top left, rgba(47, 111, 99, 0.14), transparent 32rem),
+        linear-gradient(180deg, #fbfaf6 0%, var(--bg) 46%, #efe9df 100%);
+      color: var(--text);
+    }
+
+    button,
+    input,
+    textarea {
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+      cursor: pointer;
+    }
+
+    a {
+      color: var(--accent-strong);
+      overflow-wrap: anywhere;
+    }
+
+    .page {
+      width: min(940px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 34px 0 54px;
+    }
+
+    .hero {
+      display: grid;
+      gap: 18px;
+      margin-bottom: 18px;
+      padding: 30px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background:
+        linear-gradient(135deg, rgba(255, 253, 248, 0.98), rgba(249, 244, 236, 0.86)),
+        var(--surface);
+      box-shadow: var(--shadow);
+    }
+
+    .hero-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .kicker {
+      color: var(--accent);
+      font-size: 0.78rem;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .connection {
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
+      min-height: 34px;
+      padding: 0 11px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.72);
+      color: var(--muted);
+      font-size: 0.86rem;
+      white-space: nowrap;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--rose);
+    }
+
+    .dot.ready {
+      background: var(--accent);
+    }
+
+    h1 {
+      margin: 0;
+      max-width: 720px;
+      font-size: clamp(2.3rem, 8vw, 5.9rem);
+      line-height: 0.94;
+      letter-spacing: 0;
+    }
+
+    .hero-copy {
+      margin: 0;
+      max-width: 650px;
+      color: var(--muted);
+      font-size: 1.04rem;
+      line-height: 1.6;
+    }
+
+    .composer {
+      display: grid;
+      gap: 12px;
+      margin-bottom: 18px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 253, 248, 0.96);
+      box-shadow: var(--shadow);
+    }
+
+    .composer-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .composer-title {
+      margin: 0;
+      font-size: 1rem;
+      color: var(--ink-soft);
+    }
+
+    .field-grid {
+      display: grid;
+      grid-template-columns: minmax(130px, 180px) 1fr;
+      gap: 10px;
+    }
+
+    .field {
+      width: 100%;
+      min-height: 44px;
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      outline: none;
+      background: #fffefa;
+      color: var(--text);
+    }
+
+    .field:focus {
+      border-color: rgba(47, 111, 99, 0.58);
+      box-shadow: 0 0 0 4px rgba(47, 111, 99, 0.12);
+    }
+
+    textarea.field {
+      min-height: 132px;
+      resize: vertical;
+      line-height: 1.55;
+    }
+
+    .composer-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .hint {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.45;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 42px;
+      padding: 0 15px;
+      border-radius: var(--radius);
+      background: var(--accent);
+      color: #fff;
+      font-weight: 800;
+    }
+
+    .button:hover {
+      background: var(--accent-strong);
+    }
+
+    .icon-button {
+      display: inline-grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fffefa;
+      color: var(--muted);
+    }
+
+    .icon-button:hover {
+      color: var(--text);
+      background: var(--surface-soft);
+    }
+
+    .feed {
+      display: grid;
+      gap: 14px;
+    }
+
+    .empty {
+      display: grid;
+      place-items: center;
+      min-height: 210px;
+      padding: 28px;
+      border: 1px dashed #d6cabd;
+      border-radius: var(--radius);
+      background: rgba(255, 253, 248, 0.72);
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .post {
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 253, 248, 0.98);
+      box-shadow: 0 14px 38px rgba(43, 36, 28, 0.08);
+    }
+
+    .post-main {
+      padding: 17px;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 10px;
+      color: var(--muted);
+      font-size: 0.86rem;
+    }
+
+    .author {
+      color: var(--text);
+      font-weight: 850;
+    }
+
+    .spacer {
+      flex: 1;
+    }
+
+    .post-text {
+      margin: 0;
+      color: var(--text);
+      line-height: 1.68;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    .post-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 13px;
+      padding: 9px 11px;
+      border-radius: var(--radius);
+      background: var(--accent-soft);
+      color: var(--accent-strong);
+      font-weight: 800;
+      text-decoration: none;
+    }
+
+    .comments {
+      display: grid;
+      gap: 9px;
+      padding: 13px 17px 17px;
+      border-top: 1px solid var(--line);
+      background: #f8f3eb;
+    }
+
+    .comment {
+      display: grid;
+      gap: 4px;
+      padding: 10px 11px;
+      border: 1px solid rgba(228, 221, 210, 0.78);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.72);
+    }
+
+    .comment p {
+      margin: 0;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+    }
+
+    .comment-form {
+      display: grid;
+      grid-template-columns: minmax(100px, 140px) minmax(0, 1fr) auto;
+      gap: 8px;
+      align-items: start;
+    }
+
+    .comment-form .field {
+      min-height: 40px;
+      padding-block: 8px;
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 20px;
+      z-index: 5;
+      transform: translateX(-50%) translateY(18px);
+      max-width: min(520px, calc(100% - 32px));
+      padding: 12px 14px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+      color: var(--text);
+      opacity: 0;
+      pointer-events: none;
+      transition: 180ms ease;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    @media (max-width: 680px) {
+      .page {
+        width: min(100% - 20px, 940px);
+        padding-top: 18px;
+      }
+
+      .hero {
+        padding: 20px;
+      }
+
+      .hero-top,
+      .composer-head,
+      .composer-actions {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .field-grid,
+      .comment-form {
+        grid-template-columns: 1fr;
+      }
+
+      .button {
+        width: 100%;
+      }
+
+      .icon-button {
+        width: 38px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="hero">
+      <div class="hero-top">
+        <span class="kicker">espaco privado entre duas pessoas</span>
+        <span class="connection" title="Status do armazenamento">
+          <span class="dot" id="statusDot"></span>
+          <span id="statusText">modo local</span>
+        </span>
+      </div>
+      <h1>Entre Nos</h1>
+      <p class="hero-copy">Um feed pequeno para guardar textos, links e comentarios sem transformar isso em rede social.</p>
+    </header>
+
+    <form class="composer" id="postForm">
+      <div class="composer-head">
+        <h2 class="composer-title">Nova publicacao</h2>
+        <p class="hint">Escreva, cole um link se quiser, publique.</p>
+      </div>
+      <div class="field-grid">
+        <input class="field" id="postAuthor" name="author" placeholder="Seu nome" autocomplete="name" required>
+        <input class="field" id="postLink" name="link" placeholder="Link opcional">
+      </div>
+      <textarea class="field" id="postContent" name="content" placeholder="O que voce quer deixar aqui?" required></textarea>
+      <div class="composer-actions">
+        <p class="hint" id="storageHint">Sem Firebase configurado, os dados ficam salvos apenas neste navegador.</p>
+        <button class="button" type="submit">Publicar</button>
+      </div>
+    </form>
+
+    <section class="feed" id="postsList" aria-live="polite"></section>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script type="module">
+    const firebaseConfig = {
+      apiKey: "AIzaSyCtVN1Dtyz3kmq_LMZ-CuAJjdu0CenVy_o",
+      authDomain: "poemas-54a5e.firebaseapp.com",
+      projectId: "poemas-54a5e",
+      storageBucket: "poemas-54a5e.firebasestorage.app",
+      messagingSenderId: "843423776088",
+      appId: "1:843423776088:web:a1fd03ae2876cb86d7f92d"
+    };
+
+    const privateAccessKey = "PEBFY";
+    const spaceId = "entre-nos";
+    const storageKey = `entre-nos:${spaceId}`;
+    const requiredSecret = privateAccessKey;
+    const urlSecret = new URLSearchParams(location.search).get("key") || "";
+
+    const state = {
+      posts: [],
+      comments: [],
+      db: null,
+      firebase: null,
+      unsubscribe: []
+    };
+
+    const hasFirebaseConfig = Object.values(firebaseConfig).every(Boolean);
+    const els = {
+      statusDot: document.querySelector("#statusDot"),
+      statusText: document.querySelector("#statusText"),
+      storageHint: document.querySelector("#storageHint"),
+      postForm: document.querySelector("#postForm"),
+      postsList: document.querySelector("#postsList"),
+      toast: document.querySelector("#toast")
+    };
+
+    boot();
+
+    function boot() {
+      if (requiredSecret && requiredSecret !== urlSecret) {
+        document.body.innerHTML = `
+          <main class="page">
+            <section class="empty">Acesso negado. Abra a pagina usando o link privado completo.</section>
+          </main>`;
+        return;
+      }
+
+      hydratePreferences();
+      bindEvents();
+
+      if (hasFirebaseConfig) {
+        startFirebase();
+      } else {
+        startLocalStore();
+      }
+    }
+
+    function hydratePreferences() {
+      document.querySelector("#postAuthor").value = localStorage.getItem(`${storageKey}:name`) || "";
+    }
+
+    function bindEvents() {
+      els.postForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const form = new FormData(els.postForm);
+        const author = clean(form.get("author"));
+        const payload = {
+          author,
+          content: clean(form.get("content")),
+          link: normalizeUrl(clean(form.get("link"))),
+          createdAt: Date.now()
+        };
+
+        if (!payload.author || !payload.content) return;
+        localStorage.setItem(`${storageKey}:name`, author);
+        await savePost(payload);
+        els.postForm.reset();
+        document.querySelector("#postAuthor").value = author;
+        toast("Publicado.");
+      });
+    }
+
+    async function startFirebase() {
+      const firebaseApp = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
+      const firestore = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
+
+      const app = firebaseApp.initializeApp(firebaseConfig);
+      state.db = firestore.getFirestore(app);
+      state.firebase = firestore;
+      els.statusDot.classList.add("ready");
+      els.statusText.textContent = "online";
+      els.storageHint.textContent = "Feed sincronizado em tempo real.";
+
+      const base = `spaces/${spaceId}`;
+      state.unsubscribe.push(firestore.onSnapshot(firestore.query(firestore.collection(state.db, `${base}/posts`), firestore.orderBy("createdAt", "desc")), (snapshot) => {
+        state.posts = snapshot.docs.map((item) => normalizeDoc(item));
+        renderPosts();
+      }));
+
+      state.unsubscribe.push(firestore.onSnapshot(firestore.query(firestore.collection(state.db, `${base}/comments`), firestore.orderBy("createdAt", "asc")), (snapshot) => {
+        state.comments = snapshot.docs.map((item) => normalizeDoc(item));
+        renderPosts();
+      }));
+    }
+
+    function startLocalStore() {
+      const saved = JSON.parse(localStorage.getItem(storageKey) || "{}");
+      state.posts = saved.posts || [];
+      state.comments = saved.comments || [];
+      renderPosts();
+      persist();
+    }
+
+    async function savePost(payload) {
+      if (state.db) {
+        await state.firebase.addDoc(state.firebase.collection(state.db, `spaces/${spaceId}/posts`), {
+          ...payload,
+          createdAt: state.firebase.serverTimestamp()
+        });
+        return;
+      }
+
+      state.posts.unshift({ ...payload, id: crypto.randomUUID() });
+      persist();
+      renderPosts();
+    }
+
+    async function saveComment(postId, payload) {
+      if (state.db) {
+        await state.firebase.addDoc(state.firebase.collection(state.db, `spaces/${spaceId}/comments`), {
+          ...payload,
+          postId,
+          createdAt: state.firebase.serverTimestamp()
+        });
+        return;
+      }
+
+      state.comments.push({ ...payload, postId, id: crypto.randomUUID() });
+      persist();
+      renderPosts();
+    }
+
+    async function removePost(postId) {
+      if (state.db) {
+        await state.firebase.deleteDoc(state.firebase.doc(state.db, `spaces/${spaceId}/posts/${postId}`));
+        return;
+      }
+
+      state.posts = state.posts.filter((post) => post.id !== postId);
+      state.comments = state.comments.filter((comment) => comment.postId !== postId);
+      persist();
+      renderPosts();
+    }
+
+    function renderPosts() {
+      if (!state.posts.length) {
+        els.postsList.innerHTML = `<div class="empty">Nada publicado ainda. Comece pelo campo acima.</div>`;
+        return;
+      }
+
+      els.postsList.innerHTML = state.posts.map((post) => {
+        const comments = state.comments.filter((comment) => comment.postId === post.id);
+        const link = post.link ? `<a class="post-link" href="${escapeAttr(post.link)}" target="_blank" rel="noreferrer">Abrir link</a>` : "";
+        const commentHtml = comments.map((comment) => `
+          <div class="comment">
+            <div class="meta"><span class="author">${escapeHtml(comment.author)}</span><span>${formatDate(comment.createdAt)}</span></div>
+            <p>${escapeHtml(comment.text)}</p>
+          </div>`).join("");
+
+        return `
+          <article class="post">
+            <div class="post-main">
+              <div class="meta">
+                <span class="author">${escapeHtml(post.author)}</span>
+                <span>${formatDate(post.createdAt)}</span>
+                <span class="spacer"></span>
+                <button class="icon-button" type="button" title="Excluir publicacao" aria-label="Excluir publicacao" data-remove-post="${escapeAttr(post.id)}">x</button>
+              </div>
+              <p class="post-text">${escapeHtml(post.content)}</p>
+              ${link}
+            </div>
+            <div class="comments">
+              ${commentHtml || `<p class="hint">Ainda sem comentarios.</p>`}
+              <form class="comment-form" data-comment-form="${escapeAttr(post.id)}">
+                <input class="field" name="author" placeholder="Nome" value="${escapeAttr(localStorage.getItem(`${storageKey}:name`) || "")}" required>
+                <input class="field" name="text" placeholder="Comentar..." required>
+                <button class="button" type="submit">Enviar</button>
+              </form>
+            </div>
+          </article>`;
+      }).join("");
+
+      document.querySelectorAll("[data-comment-form]").forEach((form) => {
+        form.addEventListener("submit", async (event) => {
+          event.preventDefault();
+          const data = new FormData(form);
+          const author = clean(data.get("author"));
+          const text = clean(data.get("text"));
+          if (!author || !text) return;
+          localStorage.setItem(`${storageKey}:name`, author);
+          await saveComment(form.dataset.commentForm, {
+            author,
+            text,
+            createdAt: Date.now()
+          });
+          toast("Comentario adicionado.");
+        });
+      });
+
+      document.querySelectorAll("[data-remove-post]").forEach((button) => {
+        button.addEventListener("click", async () => {
+          await removePost(button.dataset.removePost);
+          toast("Publicacao excluida.");
+        });
+      });
+    }
+
+    function persist() {
+      localStorage.setItem(storageKey, JSON.stringify({
+        posts: state.posts,
+        comments: state.comments
+      }));
+    }
+
+    function normalizeDoc(item) {
+      const data = item.data();
+      const created = data.createdAt?.toMillis ? data.createdAt.toMillis() : Date.now();
+      return { id: item.id, ...data, createdAt: created };
+    }
+
+    function clean(value) {
+      return String(value || "").trim();
+    }
+
+    function normalizeUrl(value) {
+      if (!value) return "";
+      if (/^https?:\/\//i.test(value)) return value;
+      return `https://${value}`;
+    }
+
+    function formatDate(value) {
+      return new Intl.DateTimeFormat("pt-BR", {
+        day: "2-digit",
+        month: "short",
+        hour: "2-digit",
+        minute: "2-digit"
+      }).format(new Date(value || Date.now()));
+    }
+
+    function escapeHtml(value) {
+      return clean(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function escapeAttr(value) {
+      return escapeHtml(value);
+    }
+
+    function toast(message) {
+      els.toast.textContent = message;
+      els.toast.classList.add("show");
+      window.clearTimeout(toast.timeout);
+      toast.timeout = window.setTimeout(() => els.toast.classList.remove("show"), 2300);
+    }
+  </script>
+</body>
+</html>
