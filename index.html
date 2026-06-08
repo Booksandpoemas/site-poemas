@@ -506,6 +506,7 @@
       els.statusDot.classList.add("ready");
       els.statusText.textContent = "online";
       els.storageHint.textContent = "Feed sincronizado em tempo real.";
+      recordVisit();
 
       const base = `spaces/${spaceId}`;
       state.unsubscribe.push(firestore.onSnapshot(firestore.query(firestore.collection(state.db, `${base}/posts`), firestore.orderBy("createdAt", "desc")), (snapshot) => {
@@ -566,6 +567,27 @@
       state.comments = state.comments.filter((comment) => comment.postId !== postId);
       persist();
       renderPosts();
+    }
+
+    function recordVisit() {
+      try {
+        let visitorId = localStorage.getItem(`${storageKey}:visitorId`);
+        if (!visitorId) {
+          visitorId = `visitante-${crypto.randomUUID()}`;
+          localStorage.setItem(`${storageKey}:visitorId`, visitorId);
+        }
+
+        state.firebase.addDoc(state.firebase.collection(state.db, `spaces/${spaceId}/visits`), {
+          visitante: visitorId,
+          data: state.firebase.serverTimestamp(),
+          navegador: navigator.userAgent,
+          idioma: navigator.language,
+          tela: `${window.screen.width}x${window.screen.height}`,
+          fuso: Intl.DateTimeFormat().resolvedOptions().timeZone,
+          pagina: window.location.pathname + window.location.search
+        }).catch(() => {});
+      } catch {
+      }
     }
 
     function renderPosts() {
