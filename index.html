@@ -530,14 +530,18 @@
 
     async function savePost(payload) {
       if (state.db) {
-        await state.firebase.addDoc(state.firebase.collection(state.db, `spaces/${spaceId}/posts`), {
+        const docRef = await state.firebase.addDoc(state.firebase.collection(state.db, `spaces/${spaceId}/posts`), {
           ...payload,
+          apagado: false,
           createdAt: state.firebase.serverTimestamp()
         });
+        await recordPostAction("post_criado", { ...payload, postId: docRef.id });
         return;
       }
 
-      state.posts.unshift({ ...payload, id: crypto.randomUUID() });
+      const post = { ...payload, id: crypto.randomUUID(), apagado: false };
+      state.posts.unshift(post);
+      recordLocalAction("post_criado", post);
       persist();
       renderPosts();
     }
@@ -558,15 +562,69 @@
     }
 
     async function removePost(postId) {
+      const post = state.posts.find((item) => item.id === postId);
+      if (!post) return;
+
       if (state.db) {
-        await state.firebase.deleteDoc(state.firebase.doc(state.db, `spaces/${spaceId}/posts/${postId}`));
+        await state.firebase.updateDoc(state.firebase.doc(state.db, `spaces/${spaceId}/posts/${postId}`), {
+          apagado: true,
+          apagadoEm: state.firebase.serverTimestamp()
+        });
+        await recordPostAction("post_apagado", {
+          postId,
+          author: post.author,
+          content: post.content,
+          link: post.link,
+          createdAt: post.createdAt
+        });
         return;
       }
 
-      state.posts = state.posts.filter((post) => post.id !== postId);
-      state.comments = state.comments.filter((comment) => comment.postId !== postId);
+      post.apagado = true;
+      post.apagadoEm = Date.now();
+      recordLocalAction("post_apagado", {
+        postId,
+        author: post.author,
+        content: post.content,
+        link: post.link,
+        createdAt: post.createdAt
+      });
       persist();
       renderPosts();
+    }
+
+    async function recordPostAction(acao, payload) {
+      try {
+        await state.firebase.addDoc(state.firebase.collection(state.db, `spaces/${spaceId}/history`), {
+          acao,
+          postId: payload.postId,
+          autor: payload.author || "",
+          conteudo: payload.content || "",
+          link: payload.link || "",
+          criadoEm: payload.createdAt || null,
+          registradoEm: state.firebase.serverTimestamp()
+        });
+      } catch {
+      }
+    }
+
+    function recordLocalAction(acao, payload) {
+      const saved = JSON.parse(localStorage.getItem(storageKey) || "{}");
+      const history = saved.history || [];
+      history.push({
+        acao,
+        postId: payload.postId || payload.id,
+        autor: payload.author || "",
+        conteudo: payload.content || "",
+        link: payload.link || "",
+        criadoEm: payload.createdAt || null,
+        registradoEm: Date.now()
+      });
+      localStorage.setItem(storageKey, JSON.stringify({
+        posts: state.posts,
+        comments: state.comments,
+        history
+      }));
     }
 
     function recordVisit() {
@@ -591,12 +649,14 @@
     }
 
     function renderPosts() {
-      if (!state.posts.length) {
+      const visiblePosts = state.posts.filter((post) => !post.apagado);
+
+      if (!visiblePosts.length) {
         els.postsList.innerHTML = `<div class="empty">Nada publicado ainda. Comece pelo campo acima.</div>`;
         return;
       }
 
-      els.postsList.innerHTML = state.posts.map((post) => {
+      els.postsList.innerHTML = visiblePosts.map((post) => {
         const comments = state.comments.filter((comment) => comment.postId === post.id);
         const link = post.link ? `<a class="post-link" href="${escapeAttr(post.link)}" target="_blank" rel="noreferrer">Abrir link</a>` : "";
         const commentHtml = comments.map((comment) => `
@@ -612,7 +672,7 @@
                 <span class="author">${escapeHtml(post.author)}</span>
                 <span>${formatDate(post.createdAt)}</span>
                 <span class="spacer"></span>
-                <button class="icon-button" type="button" title="Excluir publicacao" aria-label="Excluir publicacao" data-remove-post="${escapeAttr(post.id)}">x</button>
+                <button class="icon-button" type="button" title="Arquivar publicacao" aria-label="Arquivar publicacao" data-remove-post="${escapeAttr(post.id)}">x</button>
               </div>
               <p class="post-text">${escapeHtml(post.content)}</p>
               ${link}
@@ -648,15 +708,17 @@
       document.querySelectorAll("[data-remove-post]").forEach((button) => {
         button.addEventListener("click", async () => {
           await removePost(button.dataset.removePost);
-          toast("Publicacao excluida.");
+          toast("Publicacao arquivada.");
         });
       });
     }
 
     function persist() {
+      const saved = JSON.parse(localStorage.getItem(storageKey) || "{}");
       localStorage.setItem(storageKey, JSON.stringify({
         posts: state.posts,
-        comments: state.comments
+        comments: state.comments,
+        history: saved.history || []
       }));
     }
 

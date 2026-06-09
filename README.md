@@ -1,6 +1,26 @@
-# Entre Nos
+# Textos e Poemas
 
 Site estatico com um unico feed privado para duas pessoas publicarem textos, links e comentarios.
+
+## Historico e acessos
+
+O site grava acessos em:
+
+```text
+Firestore Database > Dados > spaces > entre-nos > visits
+```
+
+O site tambem grava um historico de posts criados e arquivados em:
+
+```text
+Firestore Database > Dados > spaces > entre-nos > history
+```
+
+Ao clicar em arquivar/excluir, o post nao e apagado de verdade. Ele recebe `apagado: true` e some do feed, mas continua salvo em:
+
+```text
+Firestore Database > Dados > spaces > entre-nos > posts
+```
 
 ## Estado atual
 
